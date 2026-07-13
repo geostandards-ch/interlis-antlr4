@@ -1,3 +1,4 @@
 .antlr
-interlis-antlr4/
+generated/
 input/
+output/
