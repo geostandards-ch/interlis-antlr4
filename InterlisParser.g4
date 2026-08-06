@@ -7,7 +7,7 @@ options { tokenVocab=InterlisLexer; }
 // 3.3 Règle principale - Hauptregel
 
 interlis2def
-    : (INTERLIS Dec SEMI modeldef?
+    : (INTERLIS Dec SEMI modeldef*
       | TRANSFER INTERLIS1 SEMI)
     ;
 
