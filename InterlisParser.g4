@@ -14,13 +14,16 @@ interlis2def
 // 3.5 Modèles, thèmes, classes - Modelle, Themen, Klassen
 // 3.5.1 Modèles - Modelle
 
-modeldef 
+modeldef
   : CONTRACTED? (TYPE | REFSYSTEM | SYMBOLOGY)?
     MODEL Name (LPAR Name RPAR)?
+    NOINCREMENTALTRANSFER?
     (AT STRING VERSION STRING Explanation?)?
     (TRANSLATION OF Name LSBR STRING RSBR)?
     EQ
     (CONTRACT ISSUED BY Name SEMI)?
+    (CHARSET STRING SEMI)?
+    (XMLNS STRING SEMI)?
     (IMPORTS UNQUALIFIED? (Name | INTERLIS) (COMMA UNQUALIFIED? (Name | INTERLIS))* SEMI)*
     (metaDataBasketDef
     | unitDef
@@ -402,20 +405,21 @@ plausibilityConstraint
     ;
 
 existenceConstraint
-    : EXISTENCE CONSTRAINT 
+    : EXISTENCE CONSTRAINT
       (Name COLON)?
       attributePath
       REQUIRED IN
       viewableRef
       COLON
       attributePath
+      (OR viewableRef COLON attributePath)*
       SEMI
     ;
 
 uniquenessConstraint
-    : UNIQUE (Name COLON)?
-      (LPAR (LOCAL | BASKET) RPAR)?
+    : UNIQUE (LPAR BASKET RPAR)?
       (Name COLON)?
+      (WHERE expression COLON)?
       (globalUniqueness | localUniqueness)+
       SEMI
     ;
@@ -425,11 +429,10 @@ globalUniqueness : uniqueEl ( COMMA uniqueEl )*;
 uniqueEl : objectOrAttributePath;
 
 localUniqueness
-    : UNIQUE (LPAR (LOCAL | BASKET) RPAR)?
+    : LPAR LOCAL RPAR
       (Name COLON)?
       Name
       (MINUS GT Name)* (COLON Name (COMMA Name)*)?
-      SEMI
     ;
 
 setConstraint
