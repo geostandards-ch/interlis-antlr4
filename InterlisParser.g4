@@ -42,11 +42,11 @@ modeldef
 
 topicDef
   : VIEW? TOPIC Name
-    (LPAR (ABSTRACT | FINAL) RPAR)?
+    (LPAR (ABSTRACT | FINAL) (COMMA (ABSTRACT | FINAL))* RPAR)?
     (EXTENDS topicRef)? EQ
     (BASKET? OID AS (Name | Name DOT Name |  (INTERLIS DOT)? UUIDOID) SEMI)?
     (OID AS (Name | Name DOT Name | (INTERLIS DOT)? UUIDOID | INTERLIS DOT ANYOID) SEMI)?
-    (DEPENDS ON topicRef (COMMA topicRef)* SEMI)?
+    (DEPENDS ON topicRef (COMMA topicRef)* SEMI)*
     (DEFERRED GENERICS genericRef (COMMA genericRef)* SEMI)?
     definitions*
     END Name SEMI
@@ -71,14 +71,14 @@ genericRef : domainRef;
 // 3.5.3 Classes et structures - Klassen und Strukturen
 
 classDef : CLASS Name
-             (LPAR (ABSTRACT | EXTENDED | FINAL) RPAR)?
+             (LPAR (ABSTRACT | EXTENDED | FINAL) (COMMA (ABSTRACT | EXTENDED | FINAL))* RPAR)?
              (EXTENDS classOrStructureRef)? EQ
-             ((OID AS (Name | Name DOT Name | INTERLIS DOT (Name | UUIDOID)) | NO OID) SEMI)?
+             ((OID AS (Name | Name DOT Name | (INTERLIS DOT)? UUIDOID | INTERLIS DOT Name) | NO OID) SEMI)?
              classOrStructureDef?
            END Name SEMI;
 
 structureDef : STRUCTURE Name
-                 (LPAR (ABSTRACT | EXTENDED | FINAL) RPAR)?
+                 (LPAR (ABSTRACT | EXTENDED | FINAL) (COMMA (ABSTRACT | EXTENDED | FINAL))* RPAR)?
                  (EXTENDS structureRef)? EQ
                  classOrStructureDef?
                END Name SEMI;
@@ -99,7 +99,7 @@ classOrStructureRef : classRef | structureRef;
 // 3.6 Attributs - Attribute
 
 attributeDef : CONTINUOUS? SUBDIVISION?
-               Name (LPAR(ABSTRACT | EXTENDED | FINAL | TRANSIENT)RPAR)?
+               Name (LPAR (ABSTRACT | EXTENDED | FINAL | TRANSIENT) (COMMA (ABSTRACT | EXTENDED | FINAL | TRANSIENT))* RPAR)?
                COLON (attrTypeDef | lineType)
                (ASSIGN? factor (COMMA factor)*)? SEMI;
 
@@ -132,7 +132,7 @@ restrictedClassOrStructureRef
 //3.7.1 Description des relations - Beschreibung von Beziehungen
 
 associationDef : ASSOCIATION Name?
-                     ( LPAR (ABSTRACT | EXTENDED | FINAL | OID) RPAR)?
+                     ( LPAR (ABSTRACT | EXTENDED | FINAL | OID) (COMMA (ABSTRACT | EXTENDED | FINAL | OID))* RPAR)?
                      (EXTENDS associationRef)?
                      (DERIVED FROM Name)? EQ
                      ((OID AS Name | NO OID) SEMI)?
@@ -161,7 +161,7 @@ domainDef
   : DOMAIN?
     (
       (Name | UUIDOID)
-      (LPAR (ABSTRACT | FINAL | GENERIC) RPAR)?
+      (LPAR (ABSTRACT | FINAL | GENERIC) (COMMA (ABSTRACT | FINAL | GENERIC))* RPAR)?
       (EXTENDS domainRef)?
       EQ (MANDATORY? (type | numeric | enumeration | (STRING DOTDOT STRING) | CLASS (RESTRICTION LPAR classOrAssociationRef (SEMI classOrAssociationRef)* RPAR)?))
       (CONSTRAINTS (Name COLON constraintDef) (COMMA Name COLON constraintDef)*)?
@@ -379,7 +379,7 @@ metaObjectRef : (metaDataBasketRef DOT)? Name;
 // 3.10.2.2 Paramètres des signatures - Parameter von Signaturen
 
 parameterDef : PARAMETER Name
-               (LPAR (ABSTRACT | EXTENDED | FINAL) RPAR)?
+               (LPAR (ABSTRACT | EXTENDED | FINAL) (COMMA (ABSTRACT | EXTENDED | FINAL))* RPAR)?
                COLON (attrTypeDef | METAOBJECT (OF metaObjectRef)?) SEMI;
 
 // 3.11 Paramètres d’exécution - Laufzeitparameter
@@ -527,7 +527,7 @@ argumentType : attrTypeDef
 // 3.15 Vues
 
 viewDef : VIEW Name
-        (ABSTRACT | EXTENDED | FINAL | TRANSIENT)?
+        (LPAR (ABSTRACT | EXTENDED | FINAL | TRANSIENT) (COMMA (ABSTRACT | EXTENDED | FINAL | TRANSIENT))* RPAR)?
         ( formationDef | EXTENDS viewRef )?
         baseExtensionDef*
         selection*
@@ -583,7 +583,7 @@ viewAttributes
     
 // 3.16 Représentations graphiques
 
-graphicDef : GRAPHIC Name (ABSTRACT | FINAL)?
+graphicDef : GRAPHIC Name (LPAR (ABSTRACT | FINAL) (COMMA (ABSTRACT | FINAL))* RPAR)?
      (EXTENDS graphicRef)?
      (BASED ON viewableRef)? EQ
      (selection)*
