@@ -55,6 +55,7 @@ topicDef
 definitions : metaDataBasketDef
             | unitDef
             | functionDef
+            | functionDecl
             | domainDef
             | contextDef
             | classDef
@@ -328,7 +329,7 @@ lineFormType : STRAIGHTS | ARCS | Name DOT Name;
 
 controlPoints : VERTEX Name (DOT Name)*;
 
-intersectionDef : WITHOUT OVERLAPS GT Dec;
+intersectionDef : WITHOUT OVERLAPS GT (Dec | Number | PosNumber);
 
 // 3.8.12.3 Formes de portions de courbes supplémentaires - Weitere Kurvenstück-Formen
 
