@@ -283,7 +283,8 @@ coordinateType : (COORD | MULTICOORD)
                  (COMMA (numeric | NUMERIC))?)?
                | (COORD | MULTICOORD) numeric
                  (COMMA numeric (COMMA numeric)?
-                 (COMMA rotationDef)?)?;
+                 (COMMA rotationDef)?)?
+                 (REFSYS STRING)?;
 
 rotationDef : ROTATION PosNumber MINUS GT PosNumber;
 
