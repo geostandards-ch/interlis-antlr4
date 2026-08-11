@@ -27,8 +27,8 @@ modeldef
     (IMPORTS UNQUALIFIED? (Name | INTERLIS) (COMMA UNQUALIFIED? (Name | INTERLIS))* SEMI)*
     (metaDataBasketDef
     | unitDef
+    | functionallyDerivedUnit
     | functionDef
-    | functionDecl // newly added; functionDecl should probably be renamed to functionDef and the actual functionDef renamned
     | lineFormTypeDef
     | domainDef
     | contextDef
@@ -54,8 +54,8 @@ topicDef
 
 definitions : metaDataBasketDef
             | unitDef
+            | functionallyDerivedUnit
             | functionDef
-            | functionDecl
             | domainDef
             | contextDef
             | classDef
@@ -348,7 +348,7 @@ unitDef
     EQ (
         expression (LSBR unitRef RSBR)?
         | composedUnit
-        | functionDef
+        | functionallyDerivedUnit
         | LSBR unitRef RSBR
     )?
     SEMI
@@ -504,14 +504,14 @@ argument : expression
 
 // 3.14 Fonctions
 
-functionDecl
+functionDef
   : FUNCTION Name
     LPAR argumentDef (SEMI argumentDef)* RPAR
     COLON (BOOLEAN | attrTypeDef | Name)
     SEMI
   ;
 
-functionDef
+functionallyDerivedUnit
     : UNIT? Name
       (LSBR Name RSBR)?
       (EXTENDS unitRef)?
