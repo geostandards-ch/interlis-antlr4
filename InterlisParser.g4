@@ -577,11 +577,10 @@ selection : WHERE expression SEMI;
 viewAttributes
   : ATTRIBUTE?
     (
-      ALL OF Name SEMI (Name ASSIGN expression SEMI)*
-    | (Name ASSIGN expression SEMI)+
+      ALL OF Name SEMI
     | attributeDef
-    | (ABSTRACT | EXTENDED | FINAL | TRANSIENT)? ASSIGN expression SEMI
-    );
+    | Name (LPAR (ABSTRACT | EXTENDED | FINAL | TRANSIENT) (COMMA (ABSTRACT | EXTENDED | FINAL | TRANSIENT))* RPAR)? ASSIGN expression SEMI
+    )*;
     
 // 3.16 Représentations graphiques
 
