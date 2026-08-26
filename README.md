@@ -44,24 +44,24 @@ This step is optional: running any `uv run ...` command will automatically creat
 
 ## Configuration
 
-The ANTLR version used by `antlr4-tools` is configured through the `.env` file:
-
-```text
-ANTLR4_TOOLS_ANTLR_VERSION=4.13.2
-```
-
-Run commands with the environment loaded:
+`antlr4-tools` downloads and runs a specific ANTLR release; pin it with the
+`-v` flag on the command itself:
 
 ```sh
-uv run --env-file .env <command>
+uv run antlr4-parse -v 4.13.2 <command's other arguments>
 ```
+
+(`-v VERSION` takes priority over the `ANTLR4_TOOLS_ANTLR_VERSION`
+environment variable, which `antlr4-tools` otherwise falls back to and,
+failing that, the latest release - see `antlr4_tool_runner.py`'s
+`process_args`.) Every command below pins `4.13.2` this way.
 
 ## Usage
 
 To parse an input file, use the following command:
 
 ```bash
-uv run --env-file .env antlr4-parse InterlisLexer.g4 InterlisParser.g4 <rule> input/<inputfile.extension> -<option>
+uv run antlr4-parse -v 4.13.2 InterlisLexer.g4 InterlisParser.g4 <rule> input/<inputfile.extension> -<option>
 ```
 
 ### Options
@@ -74,7 +74,7 @@ uv run --env-file .env antlr4-parse InterlisLexer.g4 InterlisParser.g4 <rule> in
 You can also parse an expression directly from the command line:
 
 ```sh
-uv run --env-file .env antlr4-parse InterlisLexer.g4 InterlisParser.g4 <startRule> -tree
+uv run antlr4-parse -v 4.13.2 InterlisLexer.g4 InterlisParser.g4 <startRule> -tree
 <input_expression>
 ^D
 ```
@@ -82,7 +82,7 @@ uv run --env-file .env antlr4-parse InterlisLexer.g4 InterlisParser.g4 <startRul
 Generating a log with all the inconsistencies:
 
 ```sh
-uv run --env-file .env antlr4-parse InterlisLexer.g4 InterlisParser.g4 <rule> input/<inputfile.extension> -diagnostics > errors.log 2>&1
+uv run antlr4-parse -v 4.13.2 InterlisLexer.g4 InterlisParser.g4 <rule> input/<inputfile.extension> -diagnostics > errors.log 2>&1
 ```
 
 ## Generating a parser
@@ -92,7 +92,7 @@ The ANTLR4 grammar is target-language independent. This repository uses Python a
 ### Python
 
 ```sh
-uv run --env-file .env antlr4 \
+uv run antlr4 -v 4.13.2 \
     -Dlanguage=Python3 \
     -o generated \
     InterlisLexer.g4 \
