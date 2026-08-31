@@ -586,7 +586,7 @@ viewAttributes
 
 graphicDef : GRAPHIC Name (LPAR (ABSTRACT | FINAL) (COMMA (ABSTRACT | FINAL))* RPAR)?
      (EXTENDS graphicRef)?
-     (BASED ON viewableRef)? EQ
+     (BASED_ON viewableRef)? EQ
      (selection)*
      (drawingRule)*
      END Name SEMI;
