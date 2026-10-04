@@ -90,7 +90,7 @@ classRef
           | (Name | SIGN) (DOT (Name | SIGN))*
           ;
 
-classOrStructureDef : (ATTRIBUTE? attributeDef+ | constraintDef+ | PARAMETER? parameterDef+)+;
+classOrStructureDef : (ATTRIBUTE? attributeDef+ | constraintDef+ | PARAMETER parameterDef+)+;
 
 structureRef : (INTERLIS DOT (Name | BOOLEAN | UUIDOID | URI) (DOT Name)*)
              | Name (DOT Name)*;
@@ -380,7 +380,7 @@ metaObjectRef : (metaDataBasketRef DOT)? Name;
 // 3.10.2 Paramètres - Parameter
 // 3.10.2.2 Paramètres des signatures - Parameter von Signaturen
 
-parameterDef : PARAMETER Name
+parameterDef : Name
                (LPAR (ABSTRACT | EXTENDED | FINAL) (COMMA (ABSTRACT | EXTENDED | FINAL))* RPAR)?
                COLON (attrTypeDef | METAOBJECT (OF metaObjectRef)?) SEMI;
 
