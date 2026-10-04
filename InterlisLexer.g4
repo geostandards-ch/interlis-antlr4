@@ -9,7 +9,6 @@ ABSTRACT : 'ABSTRACT';
 ACCORDING : 'ACCORDING';
 AGGREGATES : 'AGGREGATES';
 AGGREGATION : 'AGGREGATION';
-AGGREGATION_OF : 'AGGREGATION OF';
 ALL : 'ALL';
 AND : 'AND';
 ANY : 'ANY';
@@ -29,7 +28,6 @@ BACKSLASH: '\\';
 BAG : 'BAG';
 BASE : 'BASE';
 BASED : 'BASED';
-BASED_ON : 'BASED ON';
 BASKET : 'BASKET';
 BINARY : 'BINARY';
 BLACKBOX : 'BLACKBOX';
@@ -89,11 +87,10 @@ IMPORTS : 'IMPORTS';
 IN : 'IN';
 INHERITANCE : 'INHERITANCE';
 INSPECTION : 'INSPECTION';
-INSPECTION_OF : 'INSPECTION OF';
 INTERLIS : 'INTERLIS';
 INTERLIS1 : 'INTERLIS1';
 ISSUED : 'ISSUED'; // check if relevant, used in BJ/KS3-20060703.ili
-JOIN_OF  : 'JOIN OF';
+JOIN : 'JOIN';
 LAST : 'LAST';
 LINE : 'LINE';
 LINEATTR : 'LINEATTR';
@@ -131,7 +128,7 @@ PARAMETER : 'PARAMETER';
 PARENT : 'PARENT';
 PI : 'PI';
 POLYLINE : 'POLYLINE';
-PROJECTION_OF : 'PROJECTION OF';
+PROJECTION : 'PROJECTION';
 REFERENCE : 'REFERENCE';
 REFSYS : 'REFSYS';
 REFSYSTEM : 'REFSYSTEM';
@@ -158,7 +155,7 @@ TRANSIENT : 'TRANSIENT';
 TRANSLATION : 'TRANSLATION';
 TYPE : 'TYPE';
 UNDEFINED : 'UNDEFINED';
-UNION_OF : 'UNION OF';
+UNION : 'UNION';
 UNIQUE : 'UNIQUE';
 UNIT : 'UNIT';
 UNQUALIFIED : 'UNQUALIFIED';
@@ -180,7 +177,6 @@ XMLNS : 'XMLNS';
 
 EQ : '=';
 NOT_EQ : '!='; // newly added
-Scaling : ('e' | 'E') Number;
 // LPAR : '(';
 LPAR : '(';
 // RPAR : ')';
@@ -205,6 +201,8 @@ PosNumber : Digit+;
 Number : (PLUS | MINUS)? PosNumber;
 Dec : (Number (DOT PosNumber)? | Float);
 Float : (PLUS | MINUS)? Digit+ (DOT Digit+)? Scaling?;
+// Only part of a Float (eCH-0031 3.2.4): as its own token it would swallow names like e2.
+fragment Scaling : ('e' | 'E') Number;
 
 // 3.2.2 Noms - Namen
 
