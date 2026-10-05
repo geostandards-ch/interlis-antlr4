@@ -213,7 +213,7 @@ HexDigit : [0-9A-Fa-f];
 
 // 3.2.3 Chaîne de caractères - Zeichenketten
 
-STRING : '"' ( ~['\\"] | '\\"' | '\\\\' | '\\u' HexDigit HexDigit HexDigit HexDigit )* '"';
+STRING : '"' ( ~["\\\r\n] | '\\"' | '\\\\' | '\\u' HexDigit HexDigit HexDigit HexDigit )* '"';
 
 // 3.2.5 Ensembles de propriétés - Eigenschaftsmengen
 

@@ -29,6 +29,7 @@ modeldef
     | unitDef
     | functionDef
     | LINE FORM lineFormTypeDef*
+    | DOMAIN | UNIT | CONTEXT
     | domainDef
     | contextDef
     | PARAMETER runTimeParameterDef*
@@ -52,6 +53,7 @@ topicDef
   ;
 
 definitions : metaDataBasketDef
+            | DOMAIN | UNIT | CONTEXT
             | unitDef
             | functionDef
             | domainDef
@@ -88,7 +90,7 @@ classRef
           | (Name | SIGN) (DOT (Name | SIGN))*
           ;
 
-classOrStructureDef : (ATTRIBUTE? attributeDef+ | constraintDef+ | PARAMETER parameterDef+)+;
+classOrStructureDef : (ATTRIBUTE? attributeDef+ | ATTRIBUTE | constraintDef+ | PARAMETER parameterDef*)+;
 
 structureRef : (INTERLIS DOT (Name | BOOLEAN | UUIDOID | URI) (DOT Name)*)
              | Name (DOT Name)*;
@@ -98,15 +100,16 @@ classOrStructureRef : classRef | structureRef;
 // 3.6 Attributs - Attribute
 
 attributeDef : CONTINUOUS? SUBDIVISION?
-               Name (LPAR (ABSTRACT | EXTENDED | FINAL | TRANSIENT) (COMMA (ABSTRACT | EXTENDED | FINAL | TRANSIENT))* RPAR)?
+               (Name | UUIDOID) (LPAR (ABSTRACT | EXTENDED | FINAL | TRANSIENT) (COMMA (ABSTRACT | EXTENDED | FINAL | TRANSIENT))* RPAR)?
                COLON (attrTypeDef | lineType)
-               (ASSIGN? expression (COMMA expression)*)? SEMI;
+               (ASSIGN expression (COMMA expression)*)? SEMI;
 
 attrTypeDef : MANDATORY? (attrType 
             | enumeration 
             | (numeric (CIRCULAR)? (LSBR unitRef RSBR)?)
             | (NUMERIC (LSBR unitRef RSBR)))
-            | (BAG | LIST) cardinality? OF restrictedStructureRef;
+            | (BAG | LIST) cardinality? OF restrictedStructureRef
+            | MANDATORY;
 
 attrType : type
          | domainRef
@@ -133,10 +136,10 @@ restrictedClassOrStructureRef
 associationDef : ASSOCIATION Name?
                      ( LPAR (ABSTRACT | EXTENDED | FINAL | OID) (COMMA (ABSTRACT | EXTENDED | FINAL | OID))* RPAR)?
                      (EXTENDS associationRef)?
-                     (DERIVED FROM Name)? EQ
+                     (DERIVED FROM renamedViewableRef)? EQ
                      ((OID AS ((INTERLIS | Name) DOT)* (Name | UUIDOID | ANYOID) | NO OID) SEMI)?
                      roleDef*
-                     (ATTRIBUTE attributeDef*)?
+                     ATTRIBUTE? attributeDef*
                      (CARDINALITY EQ cardinality SEMI)?
                      constraintDef*
                  END Name? SEMI;
@@ -149,7 +152,7 @@ roleDef : Name
                )? RPAR)?
           (MINUS MINUS | MINUS LT GT | MINUS LT HASH GT) cardinality?
           restrictedClassOrAssRef (OR restrictedClassOrAssRef)*
-          (ASSIGN STRING)? SEMI
+          (ASSIGN factor)? SEMI
         | Name COLON MANDATORY? (attrTypeDef | enumeration | numeric | constraintDef) SEMI;
 
 cardinality : LCBR (MUL | PosNumber (DOTDOT (PosNumber | MUL))?) RCBR;
@@ -162,8 +165,8 @@ domainDef
       (Name | UUIDOID)
       (LPAR (ABSTRACT | FINAL | GENERIC) (COMMA (ABSTRACT | FINAL | GENERIC))* RPAR)?
       (EXTENDS domainRef)?
-      EQ (MANDATORY? (CLASS (RESTRICTION LPAR classOrAssociationRef (SEMI classOrAssociationRef)* RPAR)? | type | numeric | enumeration | (STRING DOTDOT STRING)))
-      (CONSTRAINTS (Name COLON constraintDef) (COMMA Name COLON constraintDef)*)?
+      EQ (MANDATORY? (CLASS (RESTRICTION LPAR classOrAssociationRef (SEMI classOrAssociationRef)* RPAR)? | type | numeric | enumeration | (STRING DOTDOT STRING)) | MANDATORY)
+      (CONSTRAINTS Name COLON expression (COMMA Name COLON expression)*)?
       SEMI
     )+
   ;
@@ -173,7 +176,7 @@ type : baseType
      | STRING DOTDOT STRING;
 
 domainRef : (Name DOT (Name DOT)*)? Name
-          | INTERLIS DOT Name;          
+          | INTERLIS DOT (Name | HALIGNMENT | VALIGNMENT);
 
 baseType : textType
            | enumerationType
@@ -215,7 +218,7 @@ enumTreeValueType : ALL OF domainRef;
 enumeration : LPAR (enumElement (COMMA enumElement)* (COLON FINAL)? | FINAL) RPAR (ORDERED | CIRCULAR)?;
 
 enumElement
-    : (Name | LOCAL | BASKET) (DOT Name)* (enumeration)?
+    : (Name | LOCAL | BASKET | INTERLIS1 | UUIDOID) (DOT Name)* (enumeration)?
     ;
 
 enumerationConst : HASH (Name (DOT Name)* (DOT OTHERS)? | OTHERS);
@@ -242,7 +245,8 @@ numeric
     (CLOCKWISE | COUNTERCLOCKWISE | refSys)?
   ;
 
-numericType : NUMERIC
+numericType : NUMERIC CIRCULAR? (LSBR unitRef RSBR)? (CLOCKWISE | COUNTERCLOCKWISE | refSys)?
+            | NUMERIC
             | NUMERIC numeric CIRCULAR?
             | NUMERIC (LSBR unitRef RSBR)
             | NUMERIC numeric CIRCULAR? (LSBR unitRef RSBR)?
@@ -275,9 +279,10 @@ dateTimeType : ( DATE | TIMEOFDAY | DATETIME );
 // 3.8.8 Coordonnées - Koordinaten
 
 coordinateType : (COORD | MULTICOORD)
-               | (COORD | MULTICOORD) (numeric | NUMERIC)
-                 (COMMA (numeric | NUMERIC)
-                 (COMMA (numeric | NUMERIC))?)?
+               | (COORD | MULTICOORD) (numeric | numericType)
+                 (COMMA (numeric | numericType)
+                 (COMMA (numeric | numericType))?
+                 (COMMA rotationDef)? (REFSYS STRING)?)?
                | (COORD | MULTICOORD) numeric
                  (COMMA numeric (COMMA numeric)?
                  (COMMA rotationDef)?)?
@@ -286,7 +291,7 @@ coordinateType : (COORD | MULTICOORD)
 rotationDef : ROTATION PosNumber MINUS GT PosNumber;
 
 contextDef : CONTEXT? Name EQ 
-                (domainRef EQ domainRef (OR domainRef)* SEMI)+ ;
+                (domainRef EQ domainRef (OR domainRef)* SEMI)+;
 
 // 3.8.9 Domaines de valeurs des identifications d’objet - Wertebereiche von Objektidentifikationen
 
@@ -312,7 +317,7 @@ attributeType : ATTRIBUTE
 
 classConst : GT viewableRef;
 
-attributePathConst : GT GT (viewableRef DOT)? Name;
+attributePathConst : GT GT (viewableRef MINUS GT)? Name;
 
 // 3.8.12 Polylignes - Linienzüge
 // 3.8.12.2 Polyligne comportant des segments de droite et des arcs de cercle en tant qu’éléments de portion de courbe prédéfinis
@@ -374,7 +379,7 @@ metaObjectRef : (metaDataBasketRef DOT)? Name;
 
 parameterDef : Name
                (LPAR (ABSTRACT | EXTENDED | FINAL) (COMMA (ABSTRACT | EXTENDED | FINAL))* RPAR)?
-               COLON (attrTypeDef | METAOBJECT (OF metaObjectRef)?) SEMI;
+               COLON (attrTypeDef | METAOBJECT (OF classRef)?) SEMI;
 
 // 3.11 Paramètres d’exécution - Laufzeitparameter
 
@@ -386,8 +391,7 @@ constraintDef : mandatoryConstraint
         | plausibilityConstraint
         | existenceConstraint
         | uniquenessConstraint
-        | setConstraint
-        | expression SEMI;
+        | setConstraint;
 
 mandatoryConstraint : MANDATORY CONSTRAINT (Name COLON)? expression SEMI;
 
@@ -461,7 +465,7 @@ factor
   : objectOrAttributePath
   | (inspection | INSPECTION viewableRef) (OF objectOrAttributePath)?
   | functionCall
-  | INTERLIS DOT (Name | URI | UUIDOID) (LPAR (expression (COMMA expression)*)? RPAR)?
+  | INTERLIS DOT (Name | URI | UUIDOID) (LPAR (argument (COMMA argument)*)? RPAR)?
   | PARAMETER (Name DOT)? Name
   | ALL (OF objectOrAttributePath)?
   | constant
@@ -484,14 +488,14 @@ pathEl : THIS
 
 associationPath : BACKSLASH? Name;
 
-attributeRef : Name (LSBR (FIRST | LAST | Number) RSBR)?
+attributeRef : Name (LSBR (FIRST | LAST | PosNumber) RSBR)?
               | AGGREGATES;
 
 functionCall : (Name DOT)? (Name DOT)? Name
-              LPAR argument (COMMA argument)* RPAR;
+              LPAR (argument (COMMA argument)*)? RPAR;
 
 argument : expression
-          | ALL (LPAR restrictedClassOrAssRef | viewableRef RPAR)?;
+          | ALL (LPAR (restrictedClassOrAssRef | viewableRef) RPAR)?;
 
 // 3.14 Fonctions
 
