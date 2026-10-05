@@ -21,7 +21,6 @@ modeldef
     AT STRING VERSION STRING Explanation?
     (TRANSLATION OF Name LSBR STRING RSBR)?
     EQ
-    (CONTRACT ISSUED BY Name SEMI)?
     (CHARSET STRING SEMI)?
     (XMLNS STRING SEMI)?
     (IMPORTS UNQUALIFIED? (Name | INTERLIS) (COMMA UNQUALIFIED? (Name | INTERLIS))* SEMI)*
@@ -179,7 +178,6 @@ domainRef : (Name DOT (Name DOT)*)? Name
           | INTERLIS DOT (Name | HALIGNMENT | VALIGNMENT);
 
 baseType : textType
-           | enumerationType
            | enumTreeValueType
            | alignmentType
            | booleanType
@@ -211,7 +209,6 @@ textConst : STRING;
 
 // 3.8.2 Enumérations - Aufzählungen
 
-enumerationType : ENUM LCBR enumElement (COMMA enumElement)* RCBR (ORDERED | CIRCULAR)?;
 
 enumTreeValueType : ALL OF domainRef;
 
